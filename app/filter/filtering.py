@@ -1,10 +1,13 @@
 import json
+from uuid import UUID
 
 import pika
 from pika.channel import Channel
 from pika.spec import Basic
 
+from app.db.factories import get_session_ctx
 from app.factories import rabbitmq_channel, redis_connection
+from app.models.database import Result
 from app.models.validation import TextBoundingBox
 
 
@@ -22,8 +25,10 @@ def filter_to_pii(
 def find_matches(request_id: str, bounding_boxes: list, pii_terms: list):
     bounding_boxes = [TextBoundingBox.model_validate(b) for b in bounding_boxes]
     matches = filter_to_pii(bounding_boxes, pii_terms)
-    print(f"found {len(matches)} matches: {matches}")
-    # TODO: write result to postgres with sqlmodel
+    matches = [m.model_dump() for m in matches]
+    with get_session_ctx() as session:
+        result = Result(request_id=UUID(request_id), matches=matches)
+        session.add(result)
 
 
 def on_message_received(

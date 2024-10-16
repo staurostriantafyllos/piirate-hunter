@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from sqlmodel import SQLModel
 
 
 class TextBoundingBox(BaseModel):
@@ -12,3 +13,7 @@ class TextBoundingBox(BaseModel):
     right: int
     top: int
     bottom: int
+
+
+class ResultResponse(SQLModel):
+    matches: list[TextBoundingBox]
