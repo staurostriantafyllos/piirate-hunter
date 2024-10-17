@@ -1,6 +1,6 @@
-from contextlib import asynccontextmanager
 import json
 import uuid
+from contextlib import asynccontextmanager
 from io import BytesIO
 
 from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile, status
@@ -8,13 +8,12 @@ from minio import Minio
 from pika.channel import Channel
 from sqlmodel import Session
 
-
 from app.config import MinioConfig
 from app.db.controllers import results
 from app.db.factories import get_db_session
-from app.factories import minio_connection, rabbitmq_channel_ctx, rabbitmq_channel
+from app.factories import minio_connection, rabbitmq_channel, rabbitmq_channel_ctx
 from app.models.validation import TextBoundingBox
-from app.utils import upload_object_to_minio, publish_to_exchange
+from app.utils import publish_to_exchange, upload_object_to_minio
 
 minio_config = MinioConfig()  # type:ignore
 
@@ -36,7 +35,7 @@ async def submit(
     image: UploadFile = File(),
     pii_terms: list[str] = Query(),
     minio_client: Minio = Depends(minio_connection),
-    rabbitmq_clannel: Channel = Depends(rabbitmq_channel),
+    rabbitmq_channel: Channel = Depends(rabbitmq_channel),
 ):
     correlation_id = str(uuid.uuid4())
     image_file = BytesIO(image.file.read())
@@ -51,7 +50,7 @@ async def submit(
     )
 
     publish_to_exchange(
-        channel=rabbitmq_clannel,
+        channel=rabbitmq_channel,
         correlation_id=correlation_id,
         body=json.dumps(
             {

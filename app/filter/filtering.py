@@ -1,37 +1,20 @@
 import json
+import logging
 from uuid import UUID
 
 import pika
 from pika.channel import Channel
 from pika.spec import Basic
 
+from app.db.controllers.results import write_result
 from app.db.factories import get_session_ctx
 from app.factories import rabbitmq_channel_ctx, redis_connection
-from app.models.database import Result
 from app.models.validation import TextBoundingBox
+from app.utils import find_matches
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
 
-def filter_to_pii(
-    bounding_boxes: list[TextBoundingBox], pii_terms: list[str]
-) -> list[TextBoundingBox]:
-    # this performs an exact match for now
-    matches = []
-    for box in bounding_boxes:
-        if box.text not in pii_terms:
-            matches.append(box)
-    return matches
-
-
-def find_matches(correlation_id: str, bounding_boxes: list, pii_terms: list):
-    bounding_boxes = [TextBoundingBox.model_validate(box) for box in bounding_boxes]
-    matches = filter_to_pii(bounding_boxes, pii_terms)
-    matches = [m.model_dump() for m in matches]
-    with get_session_ctx() as session:
-        result = Result(
-            correlation_id=UUID(correlation_id),
-            matches=matches,
-        )
-        session.add(result)
+logger = logging.getLogger(__name__)
 
 
 def on_message_received(
@@ -60,13 +43,27 @@ def on_message_received(
         pii_terms = r.get(pii_terms_key)
 
     if ocr_result and pii_terms:
-        find_matches(
-            correlation_id=correlation_id,
-            bounding_boxes=json.loads(ocr_result),
-            pii_terms=json.loads(pii_terms),
+        bounding_boxes = [
+            TextBoundingBox.model_validate(box) for box in json.loads(ocr_result)
+        ]
+        pii_terms = json.loads(pii_terms)
+
+        matches = find_matches(
+            bounding_boxes=bounding_boxes,
+            pii_terms=pii_terms,
         )
+
+        with get_session_ctx() as session:
+            write_result(
+                session=session,
+                correlation_id=UUID(correlation_id),
+                matches=matches,
+            )
+
         r.delete(pii_terms_key)
         r.delete(ocr_key)
+
+        logger.info(f"Processed item {correlation_id}. Matches: {len(matches)}")
     channel.basic_ack(method.delivery_tag)
 
 

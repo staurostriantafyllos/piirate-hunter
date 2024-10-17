@@ -1,4 +1,5 @@
 import json
+import logging
 
 import pika
 from pika.channel import Channel
@@ -6,6 +7,10 @@ from pika.spec import Basic
 
 from app.factories import rabbitmq_channel_ctx
 from app.utils import publish_to_exchange
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+
+logger = logging.getLogger(__name__)
 
 
 def on_message_received(
@@ -35,6 +40,9 @@ def on_message_received(
         exchange="filter_exchange",
     )
     channel.basic_ack(delivery_tag=method.delivery_tag)
+    logger.info(
+        f"Published data for correlation id '{properties.correlation_id}' to filtering and OCR exchanges."
+    )
 
 
 with rabbitmq_channel_ctx() as channel:

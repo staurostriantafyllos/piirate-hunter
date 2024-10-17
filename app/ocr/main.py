@@ -1,54 +1,18 @@
 import json
+import logging
 from io import BytesIO
 
 import pika
-import pytesseract
 import requests
 from pika.channel import Channel
 from pika.spec import Basic
-from PIL import Image
-import spacy
 
 from app.factories import rabbitmq_channel_ctx
-from app.models.validation import TextBoundingBox
-from app.utils import publish_to_exchange
+from app.utils import detect_text, publish_to_exchange
 
+logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
 
-nlp = spacy.blank("xx")
-
-
-def preprocess_text(text: str) -> str:
-    """Remove punctuation from a string using spaCy."""
-    doc = nlp(text)
-    clean_tokens = [
-        token.text for token in doc if not (token.is_punct or token.is_space)
-    ]
-    return " ".join(clean_tokens)
-
-
-def detect_text(image_file: BytesIO) -> list[TextBoundingBox]:
-    """Extract text from an image."""
-    image = Image.open(image_file)
-
-    data = pytesseract.image_to_data(image, output_type=pytesseract.Output.DICT)
-
-    result = []
-    n_boxes = len(data["level"])
-    for i in range(n_boxes):
-        if data["conf"][i] == -1:
-            continue
-
-        result.append(
-            TextBoundingBox(
-                text=preprocess_text(data["text"][i]),
-                left=data["left"][i],
-                right=data["left"][i] + data["width"][i],
-                top=data["top"][i],
-                bottom=data["top"][i] + data["height"][i],
-            )
-        )
-
-    return result
+logger = logging.getLogger(__name__)
 
 
 def on_message_received(
@@ -74,6 +38,9 @@ def on_message_received(
         exchange="filter_exchange",
     )
     channel.basic_ack(delivery_tag=method.delivery_tag)
+    logger.info(
+        f"Published OCR results for correlation id '{properties.correlation_id}' to filtering exchange."
+    )
 
 
 with rabbitmq_channel_ctx() as channel:
