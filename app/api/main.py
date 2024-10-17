@@ -1,57 +1,75 @@
+from contextlib import asynccontextmanager
 import json
 import uuid
 from io import BytesIO
 
 from fastapi import Depends, FastAPI, File, HTTPException, Query, UploadFile, status
 from minio import Minio
+from pika.channel import Channel
 from sqlmodel import Session
+
 
 from app.config import MinioConfig
 from app.db.controllers import results
 from app.db.factories import get_db_session
-from app.factories import minio_connection, redis_connection
+from app.factories import minio_connection, rabbitmq_channel_ctx, rabbitmq_channel
 from app.models.validation import TextBoundingBox
-from app.utils import publish_to_exchange, upload_object_to_minio
+from app.utils import upload_object_to_minio, publish_to_exchange
 
 minio_config = MinioConfig()  # type:ignore
-app = FastAPI()
 
 
-@app.post("/")
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    with rabbitmq_channel_ctx() as channel:
+        channel.exchange_declare(
+            exchange="input_exchange", exchange_type="topic", durable=True
+        )
+    yield
+
+
+app = FastAPI(lifespan=lifespan)
+
+
+@app.post("/pii-process")
 async def submit(
     image: UploadFile = File(),
     pii_terms: list[str] = Query(),
-    conn: Minio = Depends(minio_connection),
+    minio_client: Minio = Depends(minio_connection),
+    rabbitmq_clannel: Channel = Depends(rabbitmq_channel),
 ):
-    request_id = uuid.uuid4()
+    correlation_id = str(uuid.uuid4())
+    image_file = BytesIO(image.file.read())
 
-    imgb = BytesIO(image.file.read())
     image_url = upload_object_to_minio(
-        client=conn,
-        endpoint=minio_config.ENDPOINT,
+        client=minio_client,
         bucket=minio_config.BUCKET,
         path=minio_config.PATH,
-        filename=f"{request_id}_{image.filename}",
-        obj=imgb,
+        filename=f"{correlation_id}_{image.filename}",
+        obj=image_file,
         content_type=image.content_type,
     )
 
-    data = {"image_url": image_url, "pii_terms": pii_terms}
-
     publish_to_exchange(
-        request_id=request_id,
-        routing_key="forwarding",
-        body=json.dumps(data),
+        channel=rabbitmq_clannel,
+        correlation_id=correlation_id,
+        body=json.dumps(
+            {
+                "image_url": image_url,
+                "pii_terms": pii_terms,
+            }
+        ),
+        routing_key='input.data',
+        exchange="input_exchange",
     )
+    return {"correlation_id": correlation_id}
 
-    return {"request_id": request_id}
 
-
-@app.get("/", response_model=list[TextBoundingBox])
+@app.get("/pii-process/{correlation_id}", response_model=list[TextBoundingBox])
 async def read_result(
-    request_id: uuid.UUID, session: Session = Depends(get_db_session)
+    correlation_id: uuid.UUID, session: Session = Depends(get_db_session)
 ):
-    data = results.read_result(session=session, request_id=request_id)
+    data = results.read_result(session=session, correlation_id=correlation_id)
 
     if not data:
         raise HTTPException(status.HTTP_404_NOT_FOUND)

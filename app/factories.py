@@ -29,7 +29,6 @@ def minio_connection() -> Minio:
     return minio_client
 
 
-@contextmanager
 def rabbitmq_channel():
     """Provide a RabbitMQ channel."""
     connection_parameters = pika.ConnectionParameters(host=rabbitmq_config.HOST)
@@ -37,3 +36,8 @@ def rabbitmq_channel():
     with pika.BlockingConnection(connection_parameters) as connection:
         with connection.channel() as channel:
             yield channel
+
+
+@contextmanager
+def rabbitmq_channel_ctx():
+    yield from rabbitmq_channel()
