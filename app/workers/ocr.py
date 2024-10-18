@@ -44,7 +44,7 @@ class OCR:
             channel=channel,
             correlation_id=correlation_id,
             body=json.dumps(results),
-            routing_key='filter.boxes',
+            routing_key='filter.ocr',
             exchange=Exchange.FILTER.value,
         )
 
@@ -89,7 +89,7 @@ class OCR:
         self.channel.queue_bind(
             exchange=Exchange.OCR.value,
             queue=Queue.OCR.value,
-            routing_key="image.process.ocr",
+            routing_key="image.ocr",
         )
 
         # Declare Outgoing Exchanges

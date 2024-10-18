@@ -32,7 +32,7 @@ class Forward:
             channel=channel,
             correlation_id=properties.correlation_id,
             body=image_url,
-            routing_key='image.process.ocr',
+            routing_key='image.ocr',
             exchange=Exchange.OCR.value,
         )
 
@@ -89,7 +89,7 @@ class Forward:
         self.channel.queue_bind(
             exchange=Exchange.FORWARD.value,
             queue=Queue.FORWARD.value,
-            routing_key="input.data",
+            routing_key="input",
         )
 
         # Declare OCR and Filter exchanges

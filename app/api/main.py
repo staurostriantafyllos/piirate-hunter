@@ -58,7 +58,7 @@ async def submit(
                 "pii_terms": pii_terms,
             }
         ),
-        routing_key='input.data',
+        routing_key='input',
         exchange=Exchange.FORWARD.value,
     )
     return SubmitResponse(correlation_id=correlation_id)

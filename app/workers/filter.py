@@ -61,7 +61,7 @@ class Filter:
             this_key = None
             if method.routing_key == "filter.pii":
                 this_key = pii_terms_key
-            elif method.routing_key == "filter.boxes":
+            elif method.routing_key == "filter.ocr":
                 this_key = ocr_key
 
             # Store the message in Redis only if the key doesn't exist
@@ -118,7 +118,7 @@ class Filter:
         self.channel.queue_bind(
             exchange=Exchange.FILTER.value,
             queue=Queue.FILTER.value,
-            routing_key="filter.boxes",
+            routing_key="filter.ocr",
         )
 
     def start(self):
