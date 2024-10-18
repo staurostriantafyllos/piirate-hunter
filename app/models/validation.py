@@ -1,3 +1,5 @@
+from enum import Enum
+
 from pydantic import BaseModel
 from sqlmodel import SQLModel
 
@@ -21,3 +23,15 @@ class ResultResponse(SQLModel):
 
 class SubmitResponse(SQLModel):
     correlation_id: str
+
+
+class Exchange(Enum):
+    FORWARD = "forward_exchange"
+    OCR = "ocr_exchange"
+    FILTER = "filter_exchange"
+
+
+class Queue(Enum):
+    FORWARD = "forward_queue"
+    OCR = "ocr_queue"
+    FILTER = "filter_queue"
