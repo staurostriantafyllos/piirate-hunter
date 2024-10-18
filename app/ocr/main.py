@@ -43,31 +43,32 @@ def on_message_received(
     )
 
 
-with rabbitmq_channel_ctx() as channel:
+if __name__ == "__main__":
+    with rabbitmq_channel_ctx() as channel:
 
-    # Declare Incoming Exchanges & Queues
-    channel.exchange_declare(
-        exchange='ocr_exchange',
-        exchange_type='topic',
-        durable=True,
-    )
-    channel.queue_declare(queue='ocr_queue', durable=True)
-    channel.queue_bind(
-        exchange='ocr_exchange',
-        queue='ocr_queue',
-        routing_key='image.process.ocr',
-    )
-    # Declare Outgoing Exchanges
-    channel.exchange_declare(
-        exchange='filter_exchange',
-        exchange_type='topic',
-        durable=True,
-    )
+        # Declare Incoming Exchanges & Queues
+        channel.exchange_declare(
+            exchange='ocr_exchange',
+            exchange_type='topic',
+            durable=True,
+        )
+        channel.queue_declare(queue='ocr_queue', durable=True)
+        channel.queue_bind(
+            exchange='ocr_exchange',
+            queue='ocr_queue',
+            routing_key='image.process.ocr',
+        )
+        # Declare Outgoing Exchanges
+        channel.exchange_declare(
+            exchange='filter_exchange',
+            exchange_type='topic',
+            durable=True,
+        )
 
-    # Listen for messages
-    channel.basic_consume(
-        queue='ocr_queue',
-        on_message_callback=on_message_received,
-        auto_ack=False,
-    )
-    channel.start_consuming()
+        # Listen for messages
+        channel.basic_consume(
+            queue='ocr_queue',
+            on_message_callback=on_message_received,
+            auto_ack=False,
+        )
+        channel.start_consuming()

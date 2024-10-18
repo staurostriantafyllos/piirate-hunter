@@ -45,42 +45,43 @@ def on_message_received(
     )
 
 
-with rabbitmq_channel_ctx() as channel:
+if __name__ == "__main__":
+    with rabbitmq_channel_ctx() as channel:
 
-    # Declare the input exchange where combined image and PII terms are published
-    channel.exchange_declare(
-        exchange="input_exchange",
-        exchange_type="topic",
-        durable=True,
-    )
+        # Declare the input exchange where combined image and PII terms are published
+        channel.exchange_declare(
+            exchange="input_exchange",
+            exchange_type="topic",
+            durable=True,
+        )
 
-    # Declare a new queue for the new subscriber to consume messages
-    channel.queue_declare(
-        queue="input_queue",
-        durable=True,
-    )
-    channel.queue_bind(
-        exchange="input_exchange",
-        queue="input_queue",
-        routing_key="input.data",
-    )
+        # Declare a new queue for the new subscriber to consume messages
+        channel.queue_declare(
+            queue="input_queue",
+            durable=True,
+        )
+        channel.queue_bind(
+            exchange="input_exchange",
+            queue="input_queue",
+            routing_key="input.data",
+        )
 
-    # Declare OCR and Filter exchanges
-    channel.exchange_declare(
-        exchange="ocr_exchange",
-        exchange_type="topic",
-        durable=True,
-    )
-    channel.exchange_declare(
-        exchange="filter_exchange",
-        exchange_type="topic",
-        durable=True,
-    )
+        # Declare OCR and Filter exchanges
+        channel.exchange_declare(
+            exchange="ocr_exchange",
+            exchange_type="topic",
+            durable=True,
+        )
+        channel.exchange_declare(
+            exchange="filter_exchange",
+            exchange_type="topic",
+            durable=True,
+        )
 
-    # Listen for messages
-    channel.basic_consume(
-        queue="input_queue",
-        on_message_callback=on_message_received,
-        auto_ack=False,
-    )
-    channel.start_consuming()
+        # Listen for messages
+        channel.basic_consume(
+            queue="input_queue",
+            on_message_callback=on_message_received,
+            auto_ack=False,
+        )
+        channel.start_consuming()

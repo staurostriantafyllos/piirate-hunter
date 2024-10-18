@@ -69,23 +69,26 @@ def on_message_received(
     channel.basic_ack(method.delivery_tag)
 
 
-with rabbitmq_channel_ctx() as channel:
+if __name__ == "__main__":
+    with rabbitmq_channel_ctx() as channel:
 
-    # Declare Incoming Exchanges & Queues
-    channel.exchange_declare(
-        exchange='filter_exchange', exchange_type='topic', durable=True
-    )
+        # Declare Incoming Exchanges & Queues
+        channel.exchange_declare(
+            exchange='filter_exchange', exchange_type='topic', durable=True
+        )
 
-    channel.queue_declare(queue='filter_queue', durable=True)
-    channel.queue_bind(
-        exchange='filter_exchange', queue='filter_queue', routing_key='filter.pii'
-    )
-    channel.queue_bind(
-        exchange='filter_exchange', queue='filter_queue', routing_key='filter.boxes'
-    )
+        channel.queue_declare(queue='filter_queue', durable=True)
+        channel.queue_bind(
+            exchange='filter_exchange', queue='filter_queue', routing_key='filter.pii'
+        )
+        channel.queue_bind(
+            exchange='filter_exchange', queue='filter_queue', routing_key='filter.boxes'
+        )
 
-    channel.basic_consume(
-        queue='filter_queue', on_message_callback=on_message_received, auto_ack=False
-    )
+        channel.basic_consume(
+            queue='filter_queue',
+            on_message_callback=on_message_received,
+            auto_ack=False,
+        )
 
-    channel.start_consuming()
+        channel.start_consuming()
