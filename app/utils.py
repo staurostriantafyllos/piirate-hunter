@@ -1,16 +1,15 @@
 import os
 from io import BytesIO
+import re
+import string
 
 import pika
 import pytesseract
-import spacy
 from minio import Minio
 from pika.adapters.blocking_connection import BlockingChannel
 from PIL import Image
 
 from app.models.validation import TextBoundingBox
-
-nlp = spacy.blank("xx")
 
 
 def upload_object_to_minio(
@@ -96,13 +95,23 @@ def find_matches(
     return [m.model_dump() for m in matches]
 
 
+# Alternative using spacy
+# def preprocess_text(text: str) -> str:
+#     """Remove punctuation from a string using spaCy."""
+#     nlp = spacy.blank("xx")
+#     doc = nlp(text)
+#     clean_tokens = [
+#         token.text for token in doc if not (token.is_punct or token.is_space)
+#     ]
+#     return " ".join(clean_tokens)
+
+
 def preprocess_text(text: str) -> str:
-    """Remove punctuation from a string using spaCy."""
-    doc = nlp(text)
-    clean_tokens = [
-        token.text for token in doc if not (token.is_punct or token.is_space)
-    ]
-    return " ".join(clean_tokens)
+    """Remove punctuation and excess whitespace from a string."""
+    # Use regular expressions to remove punctuation
+    text = re.sub(f"[{re.escape(string.punctuation)}]", "", text)
+    # Remove any extra spaces
+    return " ".join(text.split())
 
 
 def detect_text(image_file: BytesIO) -> list[TextBoundingBox]:

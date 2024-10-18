@@ -8,6 +8,6 @@ pytesseract==0.3.13
 python-multipart==0.0.12
 redis==5.1.1
 requests==2.32.3
-spacy==3.8.2
+# spacy==3.8.2
 sqlmodel==0.0.22
 uvicorn==0.31.1
