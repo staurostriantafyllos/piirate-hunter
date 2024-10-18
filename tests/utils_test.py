@@ -28,6 +28,7 @@ def test_filter_to_pii():
 
     assert matches
     assert len(matches) == 2
+    assert [m.text for m in matches] == pii_terms
 
 
 def test_detect_text():
@@ -37,6 +38,7 @@ def test_detect_text():
 
     assert bounding_boxes
     assert len(bounding_boxes) == 1
+    assert bounding_boxes[0].text == 'test'
 
 
 def test_detect_text_blank_image():
@@ -62,14 +64,14 @@ def test_publish_to_exchange():
         channel=channel,
         correlation_id="123",
         body="test_message",
-        routing_key="test_queue",
+        routing_key="test_key",
     )
 
     properties = BasicProperties(correlation_id="123", delivery_mode=2)
 
     channel.basic_publish.assert_called_once_with(
         exchange="",
-        routing_key="test_queue",
+        routing_key="test_key",
         body="test_message",
         properties=properties,
     )
