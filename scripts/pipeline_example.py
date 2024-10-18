@@ -31,9 +31,7 @@ def main() -> None:
         params = {'pii_terms': pii_terms}
 
         print(f"Sending request with terms: {pii_terms}")
-        response = requests.post(
-            url=f"{api_url}/pii-process", files=files, params=params
-        )
+        response = requests.post(url=f"{api_url}/pii", files=files, params=params)
 
     response.raise_for_status()
     correlation_id = response.json()["correlation_id"]
@@ -41,7 +39,7 @@ def main() -> None:
     matches = []
 
     while True:
-        response = requests.get(url=f"{api_url}/pii-process/{correlation_id}")
+        response = requests.get(url=f"{api_url}/pii/{correlation_id}")
         if response.status_code == 200:
             print("Results are ready:\n", response.json())
             matches = response.json()['matches']

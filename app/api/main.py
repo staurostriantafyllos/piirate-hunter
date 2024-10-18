@@ -30,7 +30,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 
-@app.post("/pii-process")
+@app.post("/pii")
 async def submit(
     image: UploadFile = File(),
     pii_terms: list[str] = Query(),
@@ -64,7 +64,7 @@ async def submit(
     return SubmitResponse(correlation_id=correlation_id)
 
 
-@app.get("/pii-process/{correlation_id}")
+@app.get("/pii/{correlation_id}")
 async def read_result(
     correlation_id: uuid.UUID, session: Session = Depends(get_db_session)
 ) -> ResultResponse:

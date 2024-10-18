@@ -14,7 +14,9 @@ enhance modularity, scalability, and maintainability.
 The microservices and other dependencies can be started with Docker Compose:
 
 ```bash
-docker compose -f docker-compose-init.yaml up -d
+docker build -t pii:latest .
+
+docker compose up -d
 ```
 
 ### Example
@@ -24,8 +26,6 @@ After execution the script will save an image named output.png with the detected
 redacted.
 
 ```bash
-docker build -t myapp:latest .
-
 docker run --rm --network my_network -v "$(pwd):/app" myapp:latest python -m scripts.pipeline_example
 
 ```
