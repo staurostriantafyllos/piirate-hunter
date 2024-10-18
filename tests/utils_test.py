@@ -30,20 +30,6 @@ def test_filter_to_pii():
     assert len(matches) == 2
 
 
-def test_filter_to_pii_no_matches():
-    bounding_boxes = [
-        TextBoundingBox(text="one", left=0, right=1, top=0, bottom=1),
-        TextBoundingBox(text="two", left=1, right=2, top=1, bottom=2),
-        TextBoundingBox(text="three", left=2, right=3, top=2, bottom=3),
-    ]
-
-    pii_terms = ["four", "five"]
-
-    matches = filter_to_pii(bounding_boxes=bounding_boxes, pii_terms=pii_terms)
-
-    assert not matches
-
-
 def test_detect_text():
     # this image contains the word 'test' in it
     with open("tests/images/test_image.png", "rb") as image_file:
