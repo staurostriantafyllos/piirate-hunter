@@ -1,8 +1,10 @@
 from contextlib import contextmanager
+from typing import Generator
 
 import pika
 import redis
 from minio import Minio
+from pika.adapters.blocking_connection import BlockingChannel
 
 from app.config import MinioConfig, RabbitMQConfig, RedisConfig
 
@@ -29,7 +31,7 @@ def minio_connection() -> Minio:
     return minio_client
 
 
-def rabbitmq_channel():
+def rabbitmq_channel() -> Generator[BlockingChannel, None, None]:
     """Provide a RabbitMQ channel."""
     connection_parameters = pika.ConnectionParameters(host=rabbitmq_config.HOST)
 
@@ -39,5 +41,6 @@ def rabbitmq_channel():
 
 
 @contextmanager
-def rabbitmq_channel_ctx():
+def rabbitmq_channel_ctx() -> Generator[BlockingChannel, None, None]:
+    """Provide a RabbitMQ channel using a context manager."""
     yield from rabbitmq_channel()

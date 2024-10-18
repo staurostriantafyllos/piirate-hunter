@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from typing import Generator
 
 from sqlalchemy.engine import URL, Engine
 from sqlmodel import Session, create_engine
@@ -45,7 +46,7 @@ def create_database_engine() -> Engine:
     return engine
 
 
-def get_db_session():
+def get_db_session() -> Generator[Session, None, None]:
     """
     Provide a database session.
 
@@ -76,7 +77,7 @@ def get_db_session():
 
 
 @contextmanager
-def get_session_ctx():
+def get_session_ctx() -> Generator[Session, None, None]:
     """
     Context manager for obtaining a database session.
 

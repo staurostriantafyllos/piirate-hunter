@@ -3,7 +3,7 @@ import logging
 from uuid import UUID
 
 import pika
-from pika.channel import Channel
+from pika.adapters.blocking_connection import BlockingChannel
 from pika.spec import Basic
 
 from app.db.controllers.results import write_result
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 
 def on_message_received(
-    channel: Channel,
+    channel: BlockingChannel,
     method: Basic.Deliver,
     properties: pika.BasicProperties,
     body: bytes,
@@ -54,16 +54,18 @@ def on_message_received(
         )
 
         with get_session_ctx() as session:
-            write_result(
+            result = write_result(
                 session=session,
                 correlation_id=UUID(correlation_id),
                 matches=matches,
+            )
+            logger.info(
+                f"Processed item {result.correlation_id}. Matches: {len(matches)}"
             )
 
         r.delete(pii_terms_key)
         r.delete(ocr_key)
 
-        logger.info(f"Processed item {correlation_id}. Matches: {len(matches)}")
     channel.basic_ack(method.delivery_tag)
 
 

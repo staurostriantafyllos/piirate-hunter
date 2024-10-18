@@ -44,6 +44,12 @@ class RabbitMQConfig(BaseSettings):
 
 
 class DatabaseSettings(BaseSettings):
+    """
+    Configuration model for Postgres.
+
+    Variables will be loaded from the environment.
+    """
+
     model_config = SettingsConfigDict(env_prefix='POSTGRES_')
 
     USERNAME: str

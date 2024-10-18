@@ -2,7 +2,7 @@ import json
 import logging
 
 import pika
-from pika.channel import Channel
+from pika.adapters.blocking_connection import BlockingChannel
 from pika.spec import Basic
 
 from app.factories import rabbitmq_channel_ctx
@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 
 
 def on_message_received(
-    channel: Channel,
+    channel: BlockingChannel,
     method: Basic.Deliver,
     properties: pika.BasicProperties,
     body: bytes,

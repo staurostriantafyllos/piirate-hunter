@@ -17,3 +17,7 @@ class TextBoundingBox(BaseModel):
 
 class ResultResponse(SQLModel):
     matches: list[TextBoundingBox]
+
+
+class SubmitResponse(SQLModel):
+    correlation_id: str

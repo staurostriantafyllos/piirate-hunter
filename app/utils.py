@@ -5,7 +5,7 @@ import pika
 import pytesseract
 import spacy
 from minio import Minio
-from pika.channel import Channel
+from pika.adapters.blocking_connection import BlockingChannel
 from PIL import Image
 
 from app.models.validation import TextBoundingBox
@@ -20,7 +20,7 @@ def upload_object_to_minio(
     filename: str,
     obj: BytesIO,
     content_type: str,
-):
+) -> str:
     """Upload an object to MinIO and return the url."""
     client.put_object(
         bucket_name=bucket,
@@ -35,12 +35,12 @@ def upload_object_to_minio(
 
 
 def publish_to_exchange(
-    channel: Channel,
+    channel: BlockingChannel,
     correlation_id: str | None,
     body: str | bytes,
     routing_key: str,
     exchange: str = "",
-):
+) -> None:
     """Publish a message to a RabbitMQ queue using an exchange."""
     properties = pika.BasicProperties(
         delivery_mode=2,
