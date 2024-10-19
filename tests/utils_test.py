@@ -38,7 +38,7 @@ def test_detect_text():
 
     assert bounding_boxes
     assert len(bounding_boxes) == 1
-    assert bounding_boxes[0].text == 'test'
+    assert bounding_boxes[0].text == "test"
 
 
 def test_detect_text_blank_image():

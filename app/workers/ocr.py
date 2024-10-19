@@ -8,11 +8,11 @@ from pika.adapters.blocking_connection import BlockingChannel
 from pika.spec import Basic
 
 from app.factories import rabbitmq_channel_ctx
-from app.utils import detect_text, publish_to_exchange
 from app.models.validation import Exchange, Queue
+from app.utils import detect_text, publish_to_exchange
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -27,7 +27,8 @@ class OCR:
         image_url: str,
     ):
         """
-        Download the image from the provided URL, process it using OCR, and publish the results.
+        Download the image from the provided URL, process it using OCR, and publish the
+        results.
         """
         # Download the image from the URL
         response = requests.get(image_url)
@@ -44,7 +45,7 @@ class OCR:
             channel=channel,
             correlation_id=correlation_id,
             body=json.dumps(results),
-            routing_key='filter.ocr',
+            routing_key="filter.ocr",
             exchange=Exchange.FILTER.value,
         )
 
@@ -67,7 +68,8 @@ class OCR:
         channel.basic_ack(delivery_tag=method.delivery_tag)
 
         logger.info(
-            f"Published OCR results for correlation id '{properties.correlation_id}' to filtering exchange."
+            f"""Published OCR results for correlation id '{properties.correlation_id}'
+            to filtering exchange."""
         )
 
     def setup_exchanges_and_queues(self):

@@ -12,7 +12,7 @@ from app.config import MinioConfig
 from app.db.controllers import results
 from app.db.factories import get_db_session
 from app.factories import minio_connection, rabbitmq_channel, rabbitmq_channel_ctx
-from app.models.validation import ResultResponse, SubmitResponse, Exchange
+from app.models.validation import Exchange, ResultResponse, SubmitResponse
 from app.utils import publish_to_exchange, upload_object_to_minio
 
 minio_config = MinioConfig()  # type:ignore
@@ -58,7 +58,7 @@ async def submit(
                 "pii_terms": pii_terms,
             }
         ),
-        routing_key='input',
+        routing_key="input",
         exchange=Exchange.FORWARD.value,
     )
     return SubmitResponse(correlation_id=correlation_id)

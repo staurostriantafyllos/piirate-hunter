@@ -9,10 +9,10 @@ from pika.spec import Basic
 from app.db.controllers.results import write_result
 from app.db.factories import get_session_ctx
 from app.factories import rabbitmq_channel_ctx, redis_connection
-from app.models.validation import TextBoundingBox, Exchange, Queue
+from app.models.validation import Exchange, Queue, TextBoundingBox
 from app.utils import find_matches
 
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -24,7 +24,8 @@ class Filter:
         self, correlation_id: str, ocr_result: bytes, pii_terms: bytes
     ):
         """
-        Process the OCR results and PII terms, find matches, and store them in the database.
+        Process the OCR results and PII terms, find matches, and store them
+        in the database.
         """
         # Deserialize the OCR results and PII terms
         bounding_boxes = [
@@ -104,7 +105,7 @@ class Filter:
         Declare necessary RabbitMQ exchanges and queues.
         """
         self.channel.exchange_declare(
-            exchange=Exchange.FILTER.value, exchange_type='topic', durable=True
+            exchange=Exchange.FILTER.value, exchange_type="topic", durable=True
         )
 
         self.channel.queue_declare(queue=Queue.FILTER.value, durable=True)

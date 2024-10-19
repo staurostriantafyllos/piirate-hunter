@@ -1,7 +1,7 @@
 import os
-from io import BytesIO
 import re
 import string
+from io import BytesIO
 
 import pika
 import pytesseract
@@ -89,7 +89,8 @@ def find_matches(
         pii_terms: A list of terms considered to be PII.
 
     Returns:
-        A list of the dictionary representations of the bounding boxes that match the PII terms.
+        A list of the dictionary representations of the bounding boxes that match the
+        PII terms.
     """
     matches = filter_to_pii(bounding_boxes, pii_terms)
     return [m.model_dump() for m in matches]

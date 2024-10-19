@@ -54,16 +54,16 @@ def setup_minio() -> None:
 def setup_postgres() -> None:
     alembic.config.main(
         [
-            '--raiseerr',
-            'upgrade',
-            'head',
+            "--raiseerr",
+            "upgrade",
+            "head",
         ]
     )
 
 
 if __name__ == "__main__":
     logging.basicConfig(
-        level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s'
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s"
     )
 
     logger = logging.getLogger(__name__)

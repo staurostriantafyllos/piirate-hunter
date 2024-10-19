@@ -1,5 +1,5 @@
+from collections.abc import Generator
 from contextlib import contextmanager
-from typing import Generator
 
 from sqlalchemy.engine import URL, Engine
 from sqlmodel import Session, create_engine
@@ -82,7 +82,8 @@ def get_session_ctx() -> Generator[Session, None, None]:
     Context manager for obtaining a database session.
 
     Yield a database session within a context manager, allowing for easy integration of
-    session management in a `with` statement, ensuring that the session is properly handled.
+    session management in a `with` statement, ensuring that the session is properly
+    handled.
 
     Yields:
         A `SQLModel` session object for interacting with the database.

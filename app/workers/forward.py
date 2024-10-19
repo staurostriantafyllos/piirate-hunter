@@ -4,12 +4,13 @@ import logging
 import pika
 from pika.adapters.blocking_connection import BlockingChannel
 from pika.spec import Basic
+
 from app.factories import rabbitmq_channel_ctx
 from app.models.validation import Exchange, Queue
 from app.utils import publish_to_exchange
 
 # Configure logging
-logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -32,7 +33,7 @@ class Forward:
             channel=channel,
             correlation_id=properties.correlation_id,
             body=image_url,
-            routing_key='image.ocr',
+            routing_key="image.ocr",
             exchange=Exchange.OCR.value,
         )
 
@@ -41,12 +42,13 @@ class Forward:
             channel=channel,
             correlation_id=properties.correlation_id,
             body=json.dumps(pii_terms),
-            routing_key='filter.pii',
+            routing_key="filter.pii",
             exchange=Exchange.FILTER.value,
         )
 
         logger.info(
-            f"Published data for correlation id '{properties.correlation_id}' to filtering and OCR exchanges."
+            f"""Published data for correlation id '{properties.correlation_id}'
+            to filtering and OCR exchanges."""
         )
 
     def on_message_received(
@@ -60,8 +62,8 @@ class Forward:
         Callback function triggered when a message is received.
         """
         data = json.loads(body)
-        image_url = data['image_url']
-        pii_terms = data['pii_terms']
+        image_url = data["image_url"]
+        pii_terms = data["pii_terms"]
 
         # Process and publish the message
         self.process_message(channel, properties, image_url, pii_terms)
