@@ -64,6 +64,6 @@ class APISettings(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="API_")
 
-    TITLE: str = "PII Detection API"
+    TITLE: str = "PIIrate Hunter API"
     DESCRIPTION: str = "An API that identifies PII data in an image using OCR"
     VERSION: str = "0.0.1"

@@ -17,6 +17,7 @@ services:
 
   redis-commander:
     image: rediscommander/redis-commander:latest
+    platform: linux/amd64
     env_file: .env
     ports:
       - "8081:8081"
@@ -46,14 +47,15 @@ services:
       retries: 10
 
   setup:
-    image: pii
+    image: piirate-hunter
     depends_on:
       postgres:
         condition: service_healthy
       minio:
         condition: service_healthy
     env_file: .env
-    command: ["python", "-m", "scripts.setup"]
+    command: ["python", "-m", "scripts.initialise"]
+    restart: "no"
 
   api:
     depends_on:
@@ -63,7 +65,7 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
-    image: pii
+    image: piirate-hunter
     ports:
       - "8000:8000"
     env_file: .env
@@ -73,7 +75,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-    image: pii
+    image: piirate-hunter
     env_file: .env
     command: ["python", "-m", "app.workers.forward"]
 
@@ -81,7 +83,7 @@ services:
     depends_on:
       rabbitmq:
         condition: service_healthy
-    image: pii
+    image: piirate-hunter
     env_file: .env
     command: ["python", "-m", "app.workers.ocr"]
 
@@ -91,7 +93,7 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    image: pii
+    image: piirate-hunter
     env_file: .env
     command: ["python", "-m", "app.workers.filter"]
 
