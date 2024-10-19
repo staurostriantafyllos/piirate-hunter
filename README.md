@@ -26,7 +26,7 @@ After execution the script will save an image named output.png with the detected
 redacted.
 
 ```bash
-docker run --rm --network my_network -v "$(pwd):/app" myapp:latest python -m scripts.pipeline_example
+docker run --rm --network my_network -v "$(pwd):/app" myapp:latest python -m scripts.example
 
 ```
 ## Tests

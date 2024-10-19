@@ -56,9 +56,12 @@ services:
   setup:
     image: pii
     depends_on:
-      - api
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
     env_file: .env
-    command: ["python", "-m", "scripts.setup_services"]
+    command: ["python", "-m", "scripts.setup"]
 
   forwarding:
     depends_on:
