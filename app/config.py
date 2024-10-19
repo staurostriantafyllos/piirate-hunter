@@ -4,8 +4,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class MinioConfig(BaseSettings):
     """
     Configuration model for MinIO.
-
-    Variables will be loaded from the environment.
     """
 
     model_config = SettingsConfigDict(env_prefix="MINIO_")
@@ -21,8 +19,6 @@ class MinioConfig(BaseSettings):
 class RedisConfig(BaseSettings):
     """
     Configuration model for Redis.
-
-    Variables will be loaded from the environment.
     """
 
     model_config = SettingsConfigDict(env_prefix="REDIS_")
@@ -34,8 +30,6 @@ class RedisConfig(BaseSettings):
 class RabbitMQConfig(BaseSettings):
     """
     Configuration model for RabbitMQ.
-
-    Variables will be loaded from the environment.
     """
 
     model_config = SettingsConfigDict(env_prefix="RABBITMQ_")
@@ -46,8 +40,6 @@ class RabbitMQConfig(BaseSettings):
 class DatabaseSettings(BaseSettings):
     """
     Configuration model for Postgres.
-
-    Variables will be loaded from the environment.
     """
 
     model_config = SettingsConfigDict(env_prefix="POSTGRES_")
@@ -63,3 +55,15 @@ class DatabaseSettings(BaseSettings):
     POOL_PRE_PING: bool = False
     POOL_USE_LIFO: bool = False
     ECHO: bool = False
+
+
+class APISettings(BaseSettings):
+    """
+    Configuration model for the API.
+    """
+
+    model_config = SettingsConfigDict(env_prefix="API_")
+
+    TITLE: str = "PII Detection API"
+    DESCRIPTION: str = "An API that identifies PII data in an image using OCR"
+    VERSION: str = "0.0.1"
