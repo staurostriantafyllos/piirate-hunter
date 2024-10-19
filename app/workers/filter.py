@@ -6,7 +6,7 @@ import pika
 from pika.adapters.blocking_connection import BlockingChannel
 from pika.spec import Basic
 
-from app.db.controllers.results import write_result
+from app.db.controllers.matches import write_matches
 from app.db.factories import get_session_ctx
 from app.factories import rabbitmq_channel_ctx, redis_connection
 from app.models.validation import Exchange, Queue, TextBoundingBox
@@ -34,20 +34,20 @@ class Filter:
         pii_terms_dict = json.loads(pii_terms)
 
         # Find matches between bounding boxes and PII terms
-        matches = find_matches(
+        matched_terms = find_matches(
             bounding_boxes=bounding_boxes,
             pii_terms=pii_terms_dict,
         )
 
         # Store matches in the database
         with get_session_ctx() as session:
-            result = write_result(
+            result = write_matches(
                 session=session,
                 correlation_id=UUID(correlation_id),
-                matches=matches,
+                terms=matched_terms,
             )
             logger.info(
-                f"Processed item {result.correlation_id}. Matches: {len(matches)}"
+                f"Processed item {result.correlation_id}. Matches: {len(matched_terms)}"
             )
 
     def process_message(self, body: bytes, method: Basic.Deliver, correlation_id: str):

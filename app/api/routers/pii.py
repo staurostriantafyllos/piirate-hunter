@@ -8,10 +8,10 @@ from pika.adapters.blocking_connection import BlockingChannel
 from sqlmodel import Session
 
 from app.config import MinioConfig
-from app.db.controllers import results
+from app.db.controllers import matches
 from app.db.factories import get_db_session
 from app.factories import minio_connection, rabbitmq_channel
-from app.models.validation import Exchange, ResultResponse, SubmitResponse
+from app.models.validation import Exchange, MatchResponse, SubmitResponse
 from app.utils import publish_to_exchange, upload_object_to_minio
 
 minio_config = MinioConfig()  # type:ignore
@@ -60,10 +60,10 @@ async def submit(
 @pii_router.get("/{correlation_id}")
 async def read_result(
     correlation_id: uuid.UUID, session: Session = Depends(get_db_session)
-) -> ResultResponse:
-    data = results.read_result(session=session, correlation_id=correlation_id)
+) -> MatchResponse:
+    data = matches.read_match(session=session, correlation_id=correlation_id)
 
     if not data:
         raise HTTPException(status.HTTP_404_NOT_FOUND)
 
-    return ResultResponse(matches=data.matches)
+    return MatchResponse(matches=data.terms)

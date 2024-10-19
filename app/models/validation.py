@@ -17,7 +17,7 @@ class TextBoundingBox(BaseModel):
     bottom: int
 
 
-class ResultResponse(SQLModel):
+class MatchResponse(SQLModel):
     matches: list[TextBoundingBox]
 
 

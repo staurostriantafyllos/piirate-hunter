@@ -5,7 +5,7 @@ from alembic import context
 from sqlmodel import SQLModel
 
 from app.db.factories import get_session_ctx
-from app.models.database import Result
+from app.models.database import Matches
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
