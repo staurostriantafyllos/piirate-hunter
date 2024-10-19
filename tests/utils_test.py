@@ -33,7 +33,7 @@ def test_filter_to_pii():
 
 def test_detect_text():
     # this image contains the word 'test' in it
-    with open("tests/images/test_image.png", "rb") as image_file:
+    with open("tests/fixtures/test_image.png", "rb") as image_file:
         bounding_boxes = detect_text(BytesIO(image_file.read()))
 
     assert bounding_boxes
@@ -43,7 +43,7 @@ def test_detect_text():
 
 def test_detect_text_blank_image():
     # this is a blank image with no text
-    with open("tests/images/blank_image.png", "rb") as image_file:
+    with open("tests/fixtures/blank_image.png", "rb") as image_file:
         bounding_boxes = detect_text(BytesIO(image_file.read()))
 
     assert not bounding_boxes
