@@ -33,7 +33,14 @@ def minio_connection() -> Minio:
 
 def rabbitmq_channel() -> Generator[BlockingChannel, None, None]:
     """Provide a RabbitMQ channel."""
-    connection_parameters = pika.ConnectionParameters(host=rabbitmq_config.HOST)
+    credentials = pika.PlainCredentials(
+        username=rabbitmq_config.DEFAULT_USER,
+        password=rabbitmq_config.DEFAULT_PASS,
+    )
+
+    connection_parameters = pika.ConnectionParameters(
+        host=rabbitmq_config.HOST, credentials=credentials
+    )
 
     with pika.BlockingConnection(connection_parameters) as connection:
         with connection.channel() as channel:

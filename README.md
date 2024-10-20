@@ -117,7 +117,9 @@ This solution is implemented as a monorepo for simplicity. In a production setup
 | REDIS_PORT                    | 6379                                   | Redis port                                  | `int`           |
 | REDIS_HOSTS                   | local:localhost:6379                   | Redis multiple hosts                        | `str`           |
 | RABBITMQ_HOST                 | localhost                              | RabbitMQ host                               | `str`           |
-| POSTGRES_HOST                 |                                        | Postgres host                               | `str`           |
+| RABBITMQ_DEFAULT_USER         |                                        | RabbitMQ host                               | `str`           |
+| RABBITMQ_DEFAULT_PASS         |                                        | RabbitMQ username                           | `str`           |
+| POSTGRES_HOST                 |                                        | Postgres password                           | `str`           |
 | POSTGRES_PORT                 |                                        | Postgres port                               | `int`           |
 | POSTGRES_USERNAME             |                                        | Postgres username                           | `str`           |
 | POSTGRES_PASSWORD             |                                        | Postgres password                           | `str`           |

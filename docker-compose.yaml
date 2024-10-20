@@ -4,6 +4,7 @@ services:
     ports:
       - "5672:5672"
       - "15672:15672"
+    env_file: .env
     healthcheck:
       test: ["CMD", "rabbitmqctl", "status"]
       interval: 5s
@@ -12,6 +13,7 @@ services:
 
   redis:
     image: redis:latest
+    env_file: .env
     ports:
       - "6379:6379"
 

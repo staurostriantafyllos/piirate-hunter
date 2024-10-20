@@ -35,6 +35,8 @@ class RabbitMQConfig(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="RABBITMQ_")
 
     HOST: str = "localhost"
+    DEFAULT_USER: str
+    DEFAULT_PASS: str
 
 
 class DatabaseSettings(BaseSettings):
