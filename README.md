@@ -121,7 +121,7 @@ This solution is implemented as a monorepo for simplicity. In a production setup
 | RABBITMQ_DEFAULT_PASS         |                                        | RabbitMQ username                           | `str`           |
 | POSTGRES_HOST                 |                                        | Postgres password                           | `str`           |
 | POSTGRES_PORT                 |                                        | Postgres port                               | `int`           |
-| POSTGRES_USERNAME             |                                        | Postgres username                           | `str`           |
+| POSTGRES_USER                 |                                        | Postgres username                           | `str`           |
 | POSTGRES_PASSWORD             |                                        | Postgres password                           | `str`           |
 | POSTGRES_DATABASE             |                                        | Postgres database name                      | `str`           |
 | API_TITLE                     | PII Detection API                      | API title                                   | `str`           |

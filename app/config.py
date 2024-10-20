@@ -46,7 +46,7 @@ class DatabaseSettings(BaseSettings):
 
     model_config = SettingsConfigDict(env_prefix="POSTGRES_")
 
-    USERNAME: str
+    USER: str
     PASSWORD: str
     HOST: str
     PORT: int

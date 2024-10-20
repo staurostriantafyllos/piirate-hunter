@@ -24,7 +24,7 @@ def create_database_engine() -> Engine:
     """
     connection_string = URL.create(
         "postgresql",
-        username=config.USERNAME,
+        username=config.USER,
         password=config.PASSWORD,
         host=config.HOST,
         database=config.DATABASE,
